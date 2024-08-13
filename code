@@ -1,0 +1,95 @@
+function afterFormSubmit(e) {
+    var spreadsheetId = '1BJX91Q4c6yBLMLPf0AyW8pqnbazHPHv7nz9IsbI3RSU';
+    
+    var spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+    var sheetName = "Form Responses 1";
+    var sheet = spreadsheet.getSheetByName(sheetName);
+  
+    if (!sheet) {
+      Logger.log('Sheet not found.');
+      return;
+    }
+  
+    // Get the last row and columns in the sheet
+    var lastRow = sheet.getLastRow();
+    var lastColumn = sheet.getLastColumn();
+    
+    // Get the range of the last row
+    var range = sheet.getRange(lastRow, 1, 1, lastColumn);
+    var rowValues = range.getValues();
+    // Logger.log(rowValues[0]);
+    var pdfFile = createPDF(rowValues);
+    const email = ["hpansari02@gmail.com"];
+    sendEmailWithPDF(email, pdfFile);
+  }
+  
+  function createPDF(rowValues) {
+    const docTemplateId = '1UNd6eYsQU-p502GqsC49MiA1WH20vBlCzSinXJ4Z1lc';
+    const folderIdDoc = '1cHXqQ8IsrH1l8arIHIEEwIGNt8Ybel7v'; // ID of the folder to save the temporary Google Doc
+    const folderPDF = '1kyrVRG80al93J5Q6a09gJm0JSWbW4v8-';
+
+    // Make a copy of the template and open it
+    const docTemplate = DriveApp.getFileById(docTemplateId);
+    const newDoc = docTemplate.makeCopy('TempDoc', DriveApp.getFolderById(folderIdDoc));
+    const doc = DocumentApp.openById(newDoc.getId());
+    const body = doc.getBody();
+    body.replaceText("{name}", rowValues[0][1]);
+    body.replaceText("{phone}", rowValues[0][2]); 
+    body.replaceText("{email}", rowValues[0][3]);
+    body.replaceText("{companyname}", rowValues[0][4] );
+    body.replaceText("{companyaddress}", rowValues[0][5] );
+    body.replaceText("{gst}", rowValues[0][6] );
+    body.replaceText("{website}", rowValues[0][7] );
+    body.replaceText("{yoeb}", rowValues[0][8] );
+    body.replaceText("{busin}", rowValues[0][9] );
+    body.replaceText("{distrub}", rowValues[0][10] );
+    body.replaceText("{teams}", rowValues[0][11] );
+    body.replaceText("{emps}", rowValues[0][12] );
+    body.replaceText("{distri}", rowValues[0][13] );
+    body.replaceText("{fhah}", rowValues[0][14] );
+    body.replaceText("{ahip}", rowValues[0][15] );
+    body.replaceText("{soahr}", rowValues[0][16] );
+    body.replaceText("{cytd}", rowValues[0][17] );
+    body.replaceText("{ednp}", rowValues[0][18] );
+    body.replaceText("{whsal}", rowValues[0][19] );
+    body.replaceText("{tals}", rowValues[0][20] );
+    body.replaceText("{astal}", rowValues[0][21] );
+    body.replaceText("{pmphptr}", rowValues[0][22] );
+    body.replaceText("{eidmapa}", rowValues[0][23] );
+    body.replaceText("{wbwshs}", rowValues[0][24] );
+    body.replaceText("{aityt}", rowValues[0][25] );
+    // const a = rowValues[0].length;
+    // Logger.log(a);
+    // for(let i = 0; i <= a-1; i++) {
+    //   var row = rowValues[0][i] + " | ";
+    //   body.appendParagraph(row);
+    // }
+    // Save and close the document
+    doc.saveAndClose();
+  
+    const pdfFile = DriveApp.getFileById(newDoc.getId()).getAs(MimeType.PDF).setName(rowValues[0][1]);
+    const saveinfolder = DriveApp.getFolderById(folderPDF);
+    saveinfolder.createFile(pdfFile);
+    DriveApp.getFolderById(folderIdDoc).removeFile(DriveApp.getFileById(newDoc.getId())); // Clean up temporary file
+    return pdfFile;
+  }
+  
+  function sendEmailWithPDF(email, pdfFile) {
+    // Implement email sending logic
+    // const email = ["aarjavam322@gmail.com", "info.krishiuday@gmail.com", "harish.sgmedia@gmail.com", "hpansari02@gmail.com"];
+    // Logger.log(email.length)
+    for(let i = 0; i<email.length; i++){
+      MailApp.sendEmail({
+      to: email[i],
+      subject: 'New Entry in Reseller Request Hotpack India',
+      body: 'Your form Reseller Request Hotpack India has a new response.',
+      attachments: [pdfFile]
+    });
+    }
+    // MailApp.sendEmail({
+    //   to: email,
+    //   subject: 'New Form Submission',
+    //   body: 'Please find the attached PDF.',
+    //   attachments: [pdfFile]
+    // });
+  }
