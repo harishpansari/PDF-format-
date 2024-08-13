@@ -76,7 +76,7 @@ function afterFormSubmit(e) {
   
   function sendEmailWithPDF(email, pdfFile) {
     // Implement email sending logic
-    // const email = ["aarjavam322@gmail.com", "info.krishiuday@gmail.com", "harish.sgmedia@gmail.com", "hpansari02@gmail.com"];
+    // const email = ["email1@gmail.com", "email2@gmail.com", "email3@gmail.com", "email4@gmail.com"];
     // Logger.log(email.length)
     for(let i = 0; i<email.length; i++){
       MailApp.sendEmail({
